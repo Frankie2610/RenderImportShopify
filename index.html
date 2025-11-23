@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Excel: TWO → ONE (Auto Fill)</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <div class="app">
+      <header>
+        <h1>CHUYỂN FILE SẢN PHẨM THÀNH FILE IMPORT SHOPIFY</h1>
+        <p>
+          Tải file <strong>Thông tin sản phẩm</strong><br />
+          <a href="./TWO.xlsx" download class="btn secondary">
+            📥 Tải file SP mẫu tham khảo
+          </a>
+        </p>
+      </header>
+
+      <main>
+        <div class="card">
+          <label class="file-label">
+            <input id="twoFile" type="file" accept=".xlsx,.xls" />
+            <span
+              >Chọn file Thông tin sản phẩm.xlsx (đảm bảo file tải lên có đầy đủ
+              thông tin các cột như file mẫu)</span
+            >
+          </label>
+
+          <div class="controls">
+            <button id="processBtn" class="btn" disabled>
+              Process & Export
+            </button>
+
+            <a id="downloadLink" class="btn secondary" style="display: none"
+              >Download result</a
+            >
+          </div>
+
+          <div id="status" class="status">
+            ONE template load: <span id="oneStatus">đang tải...</span>
+          </div>
+
+          <details>
+            <summary>Ghi chú</summary>
+            <ul>
+              <li>ONE.xlsx (template cố định) được load tự động từ server.</li>
+              <li>
+                TWO.xlsx là file thông tin sản phẩm (THƯƠNG HIỆU, TÊN SẢN PHẨM,
+                MÃ SẢN PHẨM, GIÁ GIẢM, GIÁ BÁN LẺ, TYPE, MÔ TẢ (ĐOẠN TEXT GIỚI
+                THIỆU SẢN PHẨM), DESCRIPTION (THÔNG SỐ KỸ THUẬT SẢN PHẨM), GIỚI
+                TÍNH, MÃ SẢN PHẨM)
+              </li>
+            </ul>
+          </details>
+        </div>
+      </main>
+
+      <footer>Designed by GiaQuyenVan.</footer>
+    </div>
+
+    <!-- SheetJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
