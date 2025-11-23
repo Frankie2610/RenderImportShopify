@@ -380,7 +380,6 @@ processBtn.addEventListener("click", async () => {
         // Build dataOne (array of objects with normalized keys)
         const dataOne = dataTwo.map((row) => {
             const desc = row[normalizeKey("Description")] || "";
-            const title = row[normalizeKey("Tên sản phẩm")] || row[normalizeKey("TEN SAN PHAM")] || row[normalizeKey("TITLE")];
             const vendor = row[normalizeKey("Vendor")] || row[normalizeKey("Thương hiệu")] || row[normalizeKey("THƯƠNG HIỆU")] || "";
             const type = row[normalizeKey("Type")] || row[normalizeKey("TYPE")] || "";
             const sku = (row[normalizeKey("Product code")] || "").toString().replace(/[\r\n\"]+/g, "").trim()
@@ -400,6 +399,17 @@ processBtn.addEventListener("click", async () => {
                 || row[normalizeKey("Giới tính")]
                 || row[normalizeKey("Gender")]
                 || "";
+
+            const titleRaw = capitalizeWords(
+                row[normalizeKey("Tên sản phẩm")] ||
+                row[normalizeKey("TEN SAN PHAM")] ||
+                row[normalizeKey("TITLE")]
+            );
+
+            const title = type === "Watches"
+                ? `Đồng Hồ ${gender} ${titleRaw}`
+                : titleRaw;
+
             const salePrice = row[normalizeKey("Giá sale")] || row[normalizeKey("Giá giảm")] || row[normalizeKey("GIÁ GIẢM")] || row[normalizeKey("VARIANT PRICE")] || "";
             const originalPrice = row[normalizeKey("Giá bán lẻ")] || row[normalizeKey("Giá bán")] || row[normalizeKey("GIÁ BÁN LẺ")] || "";
             const qty = row[normalizeKey("Quantity")] || row[normalizeKey("Số lượng")] || row[normalizeKey("SỐ LƯỢNG")] || "";
