@@ -12,8 +12,12 @@
       <header>
         <h1>CHUYỂN FILE SẢN PHẨM THÀNH FILE IMPORT SHOPIFY</h1>
         <p>
-          Tải file <strong>Thông tin sản phẩm</strong><br />
-          <a href="./TWO.xlsx" download class="btn secondary">
+          Bạn có thể tải file mẫu tại đây để đối chiếu chuẩn<br />
+          <a
+            href="./file thông tin sản phẩm mẫu.xlsx"
+            download
+            class="btn secondary"
+          >
             📥 Tải file SP mẫu tham khảo
           </a>
         </p>
@@ -23,20 +27,17 @@
         <div class="card">
           <label class="file-label">
             <input id="twoFile" type="file" accept=".xlsx,.xls" />
-            <span
-              >Chọn file Thông tin sản phẩm.xlsx (đảm bảo file tải lên có đầy đủ
-              thông tin các cột như file mẫu)</span
-            >
+            <span>📄 Chọn file Thông tin sản phẩm.xlsx</span>
           </label>
 
           <div class="controls">
             <button id="processBtn" class="btn" disabled>
-              Process & Export
+              ⚙️ Process & Export
             </button>
 
-            <a id="downloadLink" class="btn secondary" style="display: none"
-              >Download result</a
-            >
+            <a id="downloadLink" class="btn secondary" style="display: none">
+              ⬇️ Download result (Excel)
+            </a>
           </div>
 
           <div id="status" class="status">
@@ -44,21 +45,22 @@
           </div>
 
           <details>
-            <summary>Ghi chú</summary>
+            <summary>📘 Ghi chú</summary>
             <ul>
-              <li>ONE.xlsx (template cố định) được load tự động từ server.</li>
               <li>
-                TWO.xlsx là file thông tin sản phẩm (THƯƠNG HIỆU, TÊN SẢN PHẨM,
-                MÃ SẢN PHẨM, GIÁ GIẢM, GIÁ BÁN LẺ, TYPE, MÔ TẢ (ĐOẠN TEXT GIỚI
-                THIỆU SẢN PHẨM), DESCRIPTION (THÔNG SỐ KỸ THUẬT SẢN PHẨM), GIỚI
-                TÍNH, MÃ SẢN PHẨM)
+                file thông tin sản phẩm mẫu.xlsx là file template cố định, được
+                load tự động.
+              </li>
+              <li>
+                Thông tin sản phẩm.xlsx bao gồm: Thương hiệu, Tên SP, Giá, Type,
+                Giới tính, Mô tả, Description, Mã sản phẩm,...
               </li>
             </ul>
           </details>
         </div>
       </main>
 
-      <footer>Designed by GiaQuyenVan.</footer>
+      <footer>Designed by GiaQuyenVan © 2025.</footer>
     </div>
 
     <!-- SheetJS -->
