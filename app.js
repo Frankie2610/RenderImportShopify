@@ -469,6 +469,10 @@ processBtn.addEventListener("click", async () => {
                 row[normalizeKey("MÔ TẢ")] ||
                 "";
 
+            function stripHTML(html = "") {
+                return html.replace(/<[^>]+>/g, "");
+            }
+
             if (!shortDesc || !shortDesc.trim()) {
                 shortDesc = pickDescription({
                     productType: type,   // Watches / Sunglasses
@@ -476,7 +480,10 @@ processBtn.addEventListener("click", async () => {
                     gender,
                     titleRaw
                 });
+
             }
+            // SEO DESCRIPTION → loại bỏ <b>
+            const seoDescription = stripHTML(shortDesc);
 
             const salePrice = row[normalizeKey("Giá sale")] || row[normalizeKey("Giá giảm")] || row[normalizeKey("GIÁ GIẢM")] || row[normalizeKey("VARIANT PRICE")] || "";
             const originalPrice = row[normalizeKey("Giá bán lẻ")] || row[normalizeKey("Giá bán")] || row[normalizeKey("GIÁ BÁN LẺ")] || "";
@@ -528,7 +535,7 @@ processBtn.addEventListener("click", async () => {
             obj[normalizeKey("VARIANT REQUIRES SHIPPING")] = "TRUE";
             obj[normalizeKey("VARIANT TAXABLE")] = "TRUE";
             obj[normalizeKey("VARIANT INVENTORY POLICY")] = "DENY";
-            obj[normalizeKey("SEO DESCRIPTION")] = shortDesc || "";
+            obj[normalizeKey("SEO DESCRIPTION")] = seoDescription || "";
             obj[normalizeKey("IMAGE SRC")] = "https://cdn.shopify.com/s/files/1/0862/7906/1824/files/L_M_Logo.jpg?v=1767866894"
             obj[normalizeKey("BODY (HTML)")] = generateBodyHTML(row, gender, vendor, sku, shortDesc, type) || "";
 
