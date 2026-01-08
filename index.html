@@ -31,12 +31,20 @@
           </label>
 
           <div class="controls">
+            <div class="export-format">
+              <label for="exportFormat">Định dạng tải về</label>
+              <select id="exportFormat">
+                <option value="xlsx">Excel (.xlsx)</option>
+                <option value="csv">CSV (.csv)</option>
+              </select>
+            </div>
+
             <button id="processBtn" class="btn" disabled>
               ⚙️ Process & Export
             </button>
 
             <a id="downloadLink" class="btn secondary" style="display: none">
-              ⬇️ Download result (Excel)
+              ⬇️ Download result
             </a>
           </div>
 
@@ -64,7 +72,10 @@
     </div>
 
     <!-- SheetJS -->
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="./watch_descriptions.js"></script>
+    <script src="./sunglass_descriptions.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

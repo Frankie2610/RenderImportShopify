@@ -1,4 +1,23 @@
 const ONE_XLSX_PATH = "./ONE.xlsx";
+
+/* ===== LOAD TXT DESCRIPTIONS ===== */
+let DESCRIPTION_POOL = [];
+
+function hashString(str = "") {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) - hash) + str.charCodeAt(i);
+        hash |= 0;
+    }
+    return Math.abs(hash);
+}
+
+function pickDescriptionBySKU(sku = "") {
+    if (!DESCRIPTION_POOL.length) return "";
+    const idx = hashString(sku) % DESCRIPTION_POOL.length;
+    return DESCRIPTION_POOL[idx];
+}
+
 function stripDiacritics(s = "") {
     // dùng NFD + loại combining marks
     return s && s.normalize ? s.normalize("NFD").replace(/[\u0300-\u036f]/g, "") : String(s || "");
@@ -22,6 +41,42 @@ function normalizeVendor(vendor = "") {
         .replace(/\s+/g, " ")
         .trim()
         .toUpperCase();
+}
+
+function normalizeGenderKey(gender = "") {
+    const g = normalizeVietnamese(gender);
+
+    if (g.includes("nam") || g === "male") return "male";
+    if (g.includes("nữ") || g.includes("nu") || g === "female") return "female";
+    return "unisex"; // fallback an toàn
+}
+
+const descriptionPools = {
+    watches: watchDescriptions,
+    watch: watchDescriptions,
+    dongho: watchDescriptions,
+
+    sunglasses: sunglassesDescriptions,
+    kính: sunglassesDescriptions,
+    kinhram: sunglassesDescriptions
+};
+
+function pickDescription({
+    productType,
+    sku,
+    gender,
+    titleRaw
+}) {
+    const pool = descriptionPools[(productType || "").toLowerCase()];
+    if (!pool) return "";
+
+    const g = normalizeGenderKey(gender);
+    const list = pool[g] || pool.unisex;
+    if (!list || !list.length) return "";
+
+    const index = hashString(sku || titleRaw) % list.length;
+
+    return list[index].replace("{{NAME}}", titleRaw);
 }
 
 // extractValue giữ nguyên logic (nhưng an toàn hơn với kiểu non-string)
@@ -85,7 +140,8 @@ function extractStrapMaterial(input = "") {
         .trim();
 
     const materialMap = [
-        { keys: ["nhựa", "cao su", "rubber", "resin"], value: "nhựa" },
+        { keys: ["nhựa", "resin"], value: "nhựa" },
+        { keys: ["cao su", "rubber"], value: "cao su" },
         { keys: ["da bò", "genuine leather"], value: "da bò" },
         { keys: ["da", "leather"], value: "da" },
         { keys: ["kim loại", "inox", "thép", "metal", "steel"], value: "kim loại" },
@@ -237,14 +293,14 @@ const PRODUCT_CATEGORY_MAP = {
 
 const SEO_TITLE_MAP = {
     Watches: (gender, vendor, title) => `Đồng Hồ ${gender} ${vendor} ${title}`,
-    Sunglasses: (gender, vendor, title) => `Gọng Kính ${gender} ${vendor}`,
-    Handbags: (gender, vendor, title) => `Túi Xách ${gender} ${vendor}`,
-    Earrings: (gender, vendor, title) => `Bông Tai ${gender} ${vendor}`,
-    Necklaces: (gender, vendor, title) => `Vòng Cổ ${gender} ${vendor}`,
-    Bracelets: (gender, vendor, title) => `Vòng Tay ${gender} ${vendor}`,
-    Rings: (gender, vendor, title) => `Nhẫn ${vendor} ${gender} ${vendor}`,
-    HairPin: (gender, vendor, title) => `Kẹp Tóc ${vendor} ${gender} ${vendor}`,
-    WatchBand: (gender, vendor, title) => `Dây Đồng Hồ ${vendor} ${gender} ${vendor}`
+    Sunglasses: (gender, vendor, title) => `Gọng Kính${gender} ${vendor} ${title}`,
+    Handbags: (gender, vendor, title) => `Túi Xách ${gender} ${vendor} ${title}`,
+    Earrings: (gender, vendor, title) => `Bông Tai ${gender} ${vendor} ${title}`,
+    Necklaces: (gender, vendor, title) => `Vòng Cổ ${gender} ${vendor} ${title}`,
+    Bracelets: (gender, vendor, title) => `Vòng Tay ${gender} ${vendor} ${title}`,
+    Rings: (gender, vendor, title) => `Nhẫn ${gender} ${vendor} ${title}`,
+    HairPin: (gender, vendor, title) => `Kẹp Tóc ${gender} ${vendor} ${title}`,
+    WatchBand: (gender, vendor, title) => `Dây Đồng Hồ ${gender} ${vendor} ${title}`
 };
 
 // generateBodyHTML: gần nguyên gốc, nhưng dùng stripDiacritics/normalizeKey để truy xuất row
@@ -255,7 +311,7 @@ function generateBodyHTML(row, gender, vendor, sku, shortDesc, type) {
     const color = extractValue(desc, "Màu sắc");
     const watchBezel = extractValue(desc, "Viền đồng hồ");
     const size = extractValue(desc, "Size") || extractValue(desc, "Đường kính") || row[normalizeKey("Size")];
-    const glassMaterial = extractValue(desc, "Chất liệu kính");
+    const glassMaterial = extractValue(desc, "Chất liệu kính") || extractValue(desc, "Chất liệu mặt kính");
     const waterResistant = extractValue(desc, "Chống nước");
     const rawMachine = extractValue(desc, "Máy");
     const machine = ["Quartz", "Automatic"].includes(rawMachine) ? rawMachine : "Quartz";
@@ -394,7 +450,6 @@ processBtn.addEventListener("click", async () => {
             const strapColor = extractStrapColor(strapRaw);
 
             const waterResistant = extractValue(desc, "Chống nước");
-            const shortDesc = row[normalizeKey("Mô tả")] || row[normalizeKey("MÔ TẢ")] || "";
             const gender = extractValue(desc, "Giới tính")
                 || row[normalizeKey("Giới tính")]
                 || row[normalizeKey("Gender")]
@@ -409,6 +464,19 @@ processBtn.addEventListener("click", async () => {
             const title = type === "Watches"
                 ? `Đồng Hồ ${gender} ${titleRaw}`
                 : titleRaw;
+            let shortDesc =
+                row[normalizeKey("Mô tả")] ||
+                row[normalizeKey("MÔ TẢ")] ||
+                "";
+
+            if (!shortDesc || !shortDesc.trim()) {
+                shortDesc = pickDescription({
+                    productType: type,   // Watches / Sunglasses
+                    sku,
+                    gender,
+                    titleRaw
+                });
+            }
 
             const salePrice = row[normalizeKey("Giá sale")] || row[normalizeKey("Giá giảm")] || row[normalizeKey("GIÁ GIẢM")] || row[normalizeKey("VARIANT PRICE")] || "";
             const originalPrice = row[normalizeKey("Giá bán lẻ")] || row[normalizeKey("Giá bán")] || row[normalizeKey("GIÁ BÁN LẺ")] || "";
@@ -420,6 +488,7 @@ processBtn.addEventListener("click", async () => {
                 || row[normalizeKey("Size")] || "";
 
             const caseColorRaw = extractValue(desc, "Màu mặt số") || row[normalizeKey("PRODUCT.METAFIELDS.CUSTOM.CASECOLOR")] || "";
+
             const caseColor = extractCaseColor(caseColorRaw);
             const faceShape = extractValue(desc, "Hình dạng mặt số") || row[normalizeKey("PRODUCT.METAFIELDS.CUSTOM.FACESHAPE")] || "";
 
@@ -429,9 +498,9 @@ processBtn.addEventListener("click", async () => {
                 }, ${strap}, ${waterResistant}`;
 
             // SEO_TITLE like original
-            const seoTitle = (SEO_TITLE_MAP[type] || ((gender, vendor, title) =>
-                `${capitalizeWords(vendor)} ${title}`
-            ))(gender, capitalizeWords(vendor), title);
+            const seoTitle = (SEO_TITLE_MAP[type] || ((gender, vendor, titleRaw) =>
+                `${capitalizeWords(vendor)} ${titleRaw}`
+            ))(gender, capitalizeWords(vendor), titleRaw);
 
             const handle = `${vendor}-${sku}`.replace(/\s+/g, "-");
 
@@ -460,6 +529,7 @@ processBtn.addEventListener("click", async () => {
             obj[normalizeKey("VARIANT TAXABLE")] = "TRUE";
             obj[normalizeKey("VARIANT INVENTORY POLICY")] = "DENY";
             obj[normalizeKey("SEO DESCRIPTION")] = shortDesc || "";
+            obj[normalizeKey("IMAGE SRC")] = "https://cdn.shopify.com/s/files/1/0862/7906/1824/files/L_M_Logo.jpg?v=1767866894"
             obj[normalizeKey("BODY (HTML)")] = generateBodyHTML(row, gender, vendor, sku, shortDesc, type) || "";
 
             // metafields
@@ -478,40 +548,66 @@ processBtn.addEventListener("click", async () => {
             return obj;
         });
 
-        // Reorder rows to match EXACT order and labels from ORIGINAL_ONE_HEADERS
+        const exportFormatEl = document.getElementById("exportFormat");
+        const exportFormat = exportFormatEl ? exportFormatEl.value : "xlsx";
+
+        /* ===== REORDER DATA theo ONE.xlsx ===== */
         const reordered = dataOne.map(normalizedRow => {
             const newRow = {};
             for (let i = 0; i < ORIGINAL_ONE_HEADERS.length; i++) {
                 const origHeader = ORIGINAL_ONE_HEADERS[i];
-                const normHeader = NORMALIZED_ONE_HEADERS[i]; // normalized equivalent
-                // If normalizedRow has normHeader, use it; else try other fallbacks
+                const normHeader = NORMALIZED_ONE_HEADERS[i];
+
                 let value = "";
                 if (typeof normalizedRow[normHeader] !== "undefined") {
                     value = normalizedRow[normHeader];
                 } else if (typeof normalizedRow[origHeader] !== "undefined") {
                     value = normalizedRow[origHeader];
                 } else {
-                    // fallback: try uppercase form
-                    value = normalizedRow[String(origHeader).toUpperCase()] || "";
+                    value = "";
                 }
                 newRow[origHeader] = value == null ? "" : value;
             }
             return newRow;
         });
 
-        // Build new workbook (headers exact original)
-        const ws = XLSX.utils.json_to_sheet(reordered, { header: ORIGINAL_ONE_HEADERS });
-        const newWb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(newWb, ws, "Sheet1");
-        const wbout = XLSX.write(newWb, { bookType: "xlsx", type: "array" });
-        const blob = new Blob([wbout], { type: "application/octet-stream" });
-        const url = URL.createObjectURL(blob);
+        if (!reordered.length) {
+            statusEl.textContent = "Không có dữ liệu để xuất file.";
+            return;
+        }
 
+        /* ===== BUILD WORKSHEET ===== */
+        const ws = XLSX.utils.json_to_sheet(reordered, {
+            header: ORIGINAL_ONE_HEADERS
+        });
+
+        let blob;
+        let fileName;
+
+        if (exportFormat === "csv") {
+            // ===== EXPORT CSV =====
+            const csv = XLSX.utils.sheet_to_csv(ws, { FS: "," });
+            blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+            fileName = "FILLED_ONE_FROM_TWO.csv";
+        } else {
+            // ===== EXPORT XLSX =====
+            const newWb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(newWb, ws, "Sheet1");
+            const wbout = XLSX.write(newWb, { bookType: "xlsx", type: "array" });
+            blob = new Blob([wbout], { type: "application/octet-stream" });
+            fileName = "FILLED_ONE_FROM_TWO.xlsx";
+        }
+
+        /* ===== DOWNLOAD ===== */
+        const url = URL.createObjectURL(blob);
         downloadLink.href = url;
-        downloadLink.download = "FILLED_ONE_FROM_TWO.xlsx";
+        downloadLink.download = fileName;
         downloadLink.style.display = "inline-block";
-        downloadLink.textContent = "Tải file kết quả";
-        statusEl.textContent = "Hoàn tất — nhấn 'Tải file kết quả' để lưu file.";
+        downloadLink.textContent = `Tải file kết quả (${exportFormat.toUpperCase()})`;
+
+        statusEl.textContent =
+            "Hoàn tất — nhấn 'Tải file kết quả' để lưu file.";
+
     } catch (err) {
         console.error(err);
         statusEl.textContent = "Lỗi khi xử lý file: " + (err && err.message ? err.message : String(err));
