@@ -191,7 +191,7 @@ function extractStrapColor(input = "") {
         { keys: ["xanh"], value: "Xanh" },
         { keys: ["vàng gold", "gold"], value: "Vàng Gold" },
         { keys: ["vàng hồng", "rose gold"], value: "Vàng Hồng" },
-        { keys: ["vàng"], value: "Vàng" },
+        { keys: ["vàng"], value: "Vàng Gold" },
         { keys: ["hồng", "pink"], value: "Hồng" },
     ];
 
@@ -227,7 +227,7 @@ function extractCaseColor(color = "") {
         { keys: ["xanh"], value: "Xanh" },
         { keys: ["vàng gold", "gold"], value: "Vàng Gold" },
         { keys: ["vàng hồng", "rose gold"], value: "Vàng Hồng" },
-        { keys: ["vàng"], value: "Vàng" },
+        { keys: ["vàng"], value: "Vàng Gold" },
         { keys: ["hoạ tiết", "pattern"], value: "Hoạ Tiết" },
         { keys: ["hai màu", "two tone", "2 tone"], value: "Hai Màu" },
         { keys: ["điện tử"], value: "Điện tử" },
