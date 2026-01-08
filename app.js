@@ -76,7 +76,7 @@ function pickDescription({
 
     const index = hashString(sku || titleRaw) % list.length;
 
-    return list[index].replace("{{NAME}}", titleRaw);
+    return list[index].replace("{{NAME}}", `<b>${titleRaw}</b>`);
 }
 
 // extractValue giữ nguyên logic (nhưng an toàn hơn với kiểu non-string)
