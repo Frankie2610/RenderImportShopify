@@ -483,7 +483,9 @@ processBtn.addEventListener("click", async () => {
 
             }
             // SEO DESCRIPTION → loại bỏ <b>
-            const seoDescription = stripHTML(shortDesc);
+            const formatPrice = (price) => {
+                return Number(price).toLocaleString('vi-VN');
+            };
 
             const salePrice = row[normalizeKey("Giá sale")] || row[normalizeKey("Giá giảm")] || row[normalizeKey("GIÁ GIẢM")] || row[normalizeKey("VARIANT PRICE")] || "";
             const originalPrice = row[normalizeKey("Giá bán lẻ")] || row[normalizeKey("Giá bán")] || row[normalizeKey("GIÁ BÁN LẺ")] || "";
@@ -505,10 +507,8 @@ processBtn.addEventListener("click", async () => {
                 }, ${strap}, ${waterResistant}`;
 
             // SEO_TITLE like original
-            const seoTitle = (SEO_TITLE_MAP[type] || ((gender, vendor, titleRaw) =>
-                `${capitalizeWords(vendor)} ${titleRaw}`
-            ))(gender, capitalizeWords(vendor), titleRaw);
-
+            const seoTitle = `${vendor.toUpperCase()} ${title} ${sku} ₫${formatPrice(salePrice)} - L&M Luxury Timepieces`;
+            const seoDescription = `Mua ${title} ${vendor.toUpperCase()} giá chỉ ₫${formatPrice(salePrice)} hàng chính hãng và giao hàng miễn phí toàn quốc.`;
             const handle = `${vendor}-${sku}`.replace(/\s+/g, "-");
 
             // prepare object with normalized headers as keys (so mapping later is easy)
