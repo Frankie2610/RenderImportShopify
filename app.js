@@ -510,7 +510,7 @@ processBtn.addEventListener("click", async () => {
             // SEO_TITLE like original
             const seoTitle = `${vendor.toUpperCase()} ${title} ${sku} ₫${formatPrice(salePrice)} - L&M Luxury Timepieces`;
             const seoDescription = `Mua ${title} ${vendor.toUpperCase()} giá chỉ ₫${formatPrice(salePrice)} hàng chính hãng và giao hàng miễn phí toàn quốc.`;
-            const handle = `${vendor}-${sku}`.replace(/\s+/g, "-");
+            const handle = `${vendor}-${title}-${sku}`.replace(/\s+/g, "-");
 
             // prepare object with normalized headers as keys (so mapping later is easy)
             const obj = {};
