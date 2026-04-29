@@ -1,81 +1,80 @@
 <!DOCTYPE html>
 <html lang="vi">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Transfer into Import Shopify</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
 
-  <body>
-    <div class="app">
-      <header>
-        <h1>CHUYỂN FILE SẢN PHẨM THÀNH FILE IMPORT SHOPIFY</h1>
-        <p>
-          Bạn có thể tải file mẫu tại đây để đối chiếu chuẩn<br />
-          <a
-            href="./file thông tin sản phẩm mẫu.xlsx"
-            download
-            class="btn secondary"
-          >
-            📥 Tải file SP mẫu tham khảo
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Transfer into Import Shopify</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="https://avatars.githubusercontent.com/u/119769481?v=4" type="image/png" />
+</head>
+
+<body>
+  <div class="app">
+    <header>
+      <h1>CHUYỂN FILE SẢN PHẨM THÀNH FILE IMPORT SHOPIFY</h1>
+      <p>
+        Bạn có thể tải file mẫu tại đây để đối chiếu chuẩn<br />
+        <a href="./file thông tin sản phẩm mẫu.xlsx" download class="btn secondary">
+          📥 Tải file SP mẫu tham khảo
+        </a>
+      </p>
+    </header>
+
+    <main>
+      <div class="card">
+        <label class="file-label">
+          <input id="twoFile" type="file" accept=".xlsx,.xls" />
+          <span>📄 Chọn file Thông tin sản phẩm.xlsx</span>
+        </label>
+
+        <div class="controls">
+          <div class="export-format">
+            <label for="exportFormat">Định dạng tải về</label>
+            <select id="exportFormat">
+              <option value="xlsx">Excel (.xlsx)</option>
+              <option value="csv">CSV (.csv)</option>
+            </select>
+          </div>
+
+          <button id="processBtn" class="btn" disabled>
+            ⚙️ Process & Export
+          </button>
+
+          <a id="downloadLink" class="btn secondary" style="display: none">
+            ⬇️ Download result
           </a>
-        </p>
-      </header>
-
-      <main>
-        <div class="card">
-          <label class="file-label">
-            <input id="twoFile" type="file" accept=".xlsx,.xls" />
-            <span>📄 Chọn file Thông tin sản phẩm.xlsx</span>
-          </label>
-
-          <div class="controls">
-            <div class="export-format">
-              <label for="exportFormat">Định dạng tải về</label>
-              <select id="exportFormat">
-                <option value="xlsx">Excel (.xlsx)</option>
-                <option value="csv">CSV (.csv)</option>
-              </select>
-            </div>
-
-            <button id="processBtn" class="btn" disabled>
-              ⚙️ Process & Export
-            </button>
-
-            <a id="downloadLink" class="btn secondary" style="display: none">
-              ⬇️ Download result
-            </a>
-          </div>
-
-          <div id="status" class="status">
-            ONE template load: <span id="oneStatus">đang tải...</span>
-          </div>
-
-          <details>
-            <summary>📘 Ghi chú</summary>
-            <ul>
-              <li>
-                file thông tin sản phẩm mẫu.xlsx là file template cố định, được
-                load tự động.
-              </li>
-              <li>
-                Thông tin sản phẩm.xlsx bao gồm: Thương hiệu, Tên SP, Giá, Type,
-                Giới tính, Mô tả, Description, Mã sản phẩm,...
-              </li>
-            </ul>
-          </details>
         </div>
-      </main>
 
-      <footer>Designed by GiaQuyenVan © 2025.</footer>
-    </div>
+        <div id="status" class="status">
+          ONE template load: <span id="oneStatus">đang tải...</span>
+        </div>
 
-    <!-- SheetJS -->
+        <details>
+          <summary>📘 Ghi chú</summary>
+          <ul>
+            <li>
+              file thông tin sản phẩm mẫu.xlsx là file template cố định, được
+              load tự động.
+            </li>
+            <li>
+              Thông tin sản phẩm.xlsx bao gồm: Thương hiệu, Tên SP, Giá, Type,
+              Giới tính, Mô tả, Description, Mã sản phẩm,...
+            </li>
+          </ul>
+        </details>
+      </div>
+    </main>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="./watch_descriptions.js"></script>
-    <script src="./sunglass_descriptions.js"></script>
-    <script src="app.js"></script>
-  </body>
+    <footer>Designed by GiaQuyenVan © 2025.</footer>
+  </div>
+
+  <!-- SheetJS -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="./watch_descriptions.js"></script>
+  <script src="./sunglass_descriptions.js"></script>
+  <script src="app.js"></script>
+</body>
+
 </html>

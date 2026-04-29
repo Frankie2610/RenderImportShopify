@@ -525,7 +525,7 @@ processBtn.addEventListener("click", async () => {
             obj[normalizeKey("VARIANT SKU")] = sku || "";
             obj[normalizeKey("VARIANT INVENTORY QTY")] = qty || "";
             obj[normalizeKey("VARIANT FULFILLMENT SERVICE")] = "manual";
-            obj[normalizeKey("STATUS")] = "draft";
+            obj[normalizeKey("STATUS")] = "active";
             obj[normalizeKey("INVENTORY POLICY")] = "deny";
             obj[normalizeKey("VARIANT INVENTORY TRACKER")] = "shopify";
             obj[normalizeKey("SEO TITLE")] = seoTitle || "";
@@ -537,7 +537,7 @@ processBtn.addEventListener("click", async () => {
             obj[normalizeKey("VARIANT TAXABLE")] = "TRUE";
             obj[normalizeKey("VARIANT INVENTORY POLICY")] = "DENY";
             obj[normalizeKey("SEO DESCRIPTION")] = seoDescription || "";
-            obj[normalizeKey("IMAGE SRC")] = "https://cdn.shopify.com/s/files/1/0862/7906/1824/files/L_M_Logo.jpg?v=1767866894"
+            // obj[normalizeKey("IMAGE SRC")] = "https://cdn.shopify.com/s/files/1/0862/7906/1824/files/L_M_Logo.jpg?v=1767866894"
             obj[normalizeKey("BODY (HTML)")] = generateBodyHTML(row, gender, vendor, sku, shortDesc, type) || "";
 
             // metafields
@@ -560,8 +560,14 @@ processBtn.addEventListener("click", async () => {
         const exportFormat = exportFormatEl ? exportFormatEl.value : "xlsx";
 
         /* ===== REORDER DATA theo ONE.xlsx ===== */
-        const reordered = dataOne.map(normalizedRow => {
-            const newRow = {};
+        const reordered = [];
+
+        dataOne.forEach(normalizedRow => {
+            const baseRow = {};
+            let handleValue = "";
+            let skuValue = "";
+
+            // ===== build dòng chính =====
             for (let i = 0; i < ORIGINAL_ONE_HEADERS.length; i++) {
                 const origHeader = ORIGINAL_ONE_HEADERS[i];
                 const normHeader = NORMALIZED_ONE_HEADERS[i];
@@ -571,12 +577,50 @@ processBtn.addEventListener("click", async () => {
                     value = normalizedRow[normHeader];
                 } else if (typeof normalizedRow[origHeader] !== "undefined") {
                     value = normalizedRow[origHeader];
-                } else {
-                    value = "";
                 }
-                newRow[origHeader] = value == null ? "" : value;
+
+                value = value == null ? "" : value;
+
+                // lưu lại handle + sku
+                if (normHeader === normalizeKey("HANDLE")) {
+                    handleValue = value;
+                }
+                if (normHeader === normalizeKey("VARIANT SKU")) {
+                    skuValue = value;
+                }
+
+                baseRow[origHeader] = value;
             }
-            return newRow;
+
+            // ===== set IMAGE SRC dòng chính (_1) =====
+            const imageColIndex = NORMALIZED_ONE_HEADERS.findIndex(
+                h => h === normalizeKey("IMAGE SRC")
+            );
+            if (imageColIndex !== -1) {
+                const colName = ORIGINAL_ONE_HEADERS[imageColIndex];
+                baseRow[colName] = `https://cdn.shopify.com/s/files/1/0862/7906/1824/files/${skuValue}_1.png`;
+            }
+
+            reordered.push(baseRow);
+
+            // ===== tạo 3 dòng phụ =====
+            for (let i = 2; i <= 4; i++) {
+                const extraRow = {};
+
+                ORIGINAL_ONE_HEADERS.forEach((header, idx) => {
+                    const normHeader = NORMALIZED_ONE_HEADERS[idx];
+
+                    if (normHeader === normalizeKey("HANDLE")) {
+                        extraRow[header] = handleValue;
+                    } else if (normHeader === normalizeKey("IMAGE SRC")) {
+                        extraRow[header] = `https://cdn.shopify.com/s/files/1/0862/7906/1824/files/${skuValue}_${i}.png`;
+                    } else {
+                        extraRow[header] = "";
+                    }
+                });
+
+                reordered.push(extraRow);
+            }
         });
 
         if (!reordered.length) {
