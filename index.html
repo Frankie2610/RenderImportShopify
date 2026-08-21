@@ -28,6 +28,68 @@
           <span>📄 Chọn file Thông tin sản phẩm.xlsx</span>
         </label>
 
+        <section class="discount-config" aria-labelledby="discountConfigTitle">
+          <div class="discount-config__head">
+            <div>
+              <div class="section-kicker">TÙY CHỌN DISCOUNT</div>
+              <h2 id="discountConfigTitle">Quy tắc phân nhóm giảm giá</h2>
+              <p>Công thức cố định: <strong>1 - (Variant Price / Variant Compare At Price)</strong></p>
+            </div>
+            <span class="pill pill-gold">Có thể tùy chỉnh</span>
+          </div>
+
+          <div class="formula-strip">
+            <span class="pill">Variant Price rỗng → để rỗng</span>
+            <span class="pill">Compare At Price = 0 → Rule 1</span>
+            <span class="pill">Ô trống → dùng mặc định</span>
+          </div>
+
+          <div class="discount-rules">
+            <div class="rule-card">
+              <div class="rule-card__top">
+                <span class="rule-number">01</span>
+                <span class="rule-operator">≤</span>
+              </div>
+              <label>Ngưỡng (%)</label>
+              <div class="input-suffix">
+                <input id="discountLowMax" type="number" min="0" step="0.01" placeholder="20" />
+                <span>%</span>
+              </div>
+              <label>Nhãn xuất ra</label>
+              <input id="discountLowLabel" type="text" placeholder="0% - 20%" />
+            </div>
+
+            <div class="rule-card">
+              <div class="rule-card__top">
+                <span class="rule-number">02</span>
+                <span class="rule-operator">≤</span>
+              </div>
+              <label>Ngưỡng (%)</label>
+              <div class="input-suffix">
+                <input id="discountMidMax" type="number" min="0" step="0.01" placeholder="40" />
+                <span>%</span>
+              </div>
+              <label>Nhãn xuất ra</label>
+              <input id="discountMidLabel" type="text" placeholder="30% - 40%" />
+            </div>
+
+            <div class="rule-card">
+              <div class="rule-card__top">
+                <span class="rule-number">03</span>
+                <span class="rule-operator">≥</span>
+              </div>
+              <label>Ngưỡng (%)</label>
+              <div class="input-suffix">
+                <input id="discountHighMin" type="number" min="0" step="0.01" placeholder="50" />
+                <span>%</span>
+              </div>
+              <label>Nhãn xuất ra</label>
+              <input id="discountHighLabel" type="text" placeholder="Từ 50%" />
+            </div>
+          </div>
+          <p class="config-note">Mặc định: ≤20% → <b>0% - 20%</b> · ≤40% → <b>30% - 40%</b> · ≥50% → <b>Từ 50%</b>. Khoảng không khớp rule sẽ để rỗng.</p>
+        </section>
+
         <div class="controls">
           <div class="export-format">
             <label for="exportFormat">Định dạng tải về</label>

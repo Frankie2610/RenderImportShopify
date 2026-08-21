@@ -184,3 +184,206 @@ footer {
   border-color: #5c6ac4; /* Shopify purple */
   box-shadow: 0 0 0 2px rgba(92, 106, 196, 0.15);
 }
+
+/* ===== Discount rule configurator ===== */
+.discount-config {
+  margin-top: 22px;
+  padding: 20px;
+  border: 1px solid #e4e9f1;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #fbfcff 0%, #f7f9fc 100%);
+}
+
+.discount-config__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.discount-config h2 {
+  margin-top: 2px;
+  font-size: 18px;
+  line-height: 1.35;
+  letter-spacing: -0.2px;
+}
+
+.discount-config__head p {
+  margin-top: 5px;
+  font-size: 13px;
+}
+
+.section-kicker {
+  color: var(--gold);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.15px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 28px;
+  padding: 5px 10px;
+  border: 1px solid #dfe5ee;
+  border-radius: 999px;
+  background: #fff;
+  color: #536174;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.pill-gold {
+  border-color: rgba(212, 166, 74, 0.35);
+  background: rgba(212, 166, 74, 0.1);
+  color: #8a651c;
+}
+
+.formula-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+.discount-rules {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.rule-card {
+  padding: 15px;
+  border: 1px solid #e2e7ef;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(28, 46, 74, 0.05);
+}
+
+.rule-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.rule-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.rule-operator {
+  color: var(--gold);
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.rule-card label {
+  display: block;
+  margin: 10px 0 6px;
+  color: #667085;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.rule-card input {
+  width: 100%;
+  height: 40px;
+  padding: 9px 11px;
+  border: 1px solid #d9e0e9;
+  border-radius: 10px;
+  background: #fbfcfe;
+  color: var(--primary);
+  font: inherit;
+  font-size: 14px;
+  transition: 0.2s ease;
+}
+
+.rule-card input::placeholder {
+  color: #a2abba;
+}
+
+.rule-card input:focus {
+  outline: none;
+  border-color: var(--primary-light);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(47, 77, 114, 0.1);
+}
+
+.input-suffix {
+  position: relative;
+}
+
+.input-suffix input {
+  padding-right: 34px;
+}
+
+.input-suffix span {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  color: #7b8797;
+  font-size: 13px;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.config-note {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #e6ebf2;
+  color: #667085;
+  font-size: 12px;
+}
+
+.controls {
+  flex-wrap: wrap;
+}
+
+@media (max-width: 720px) {
+  .app {
+    margin: 24px auto;
+    padding: 14px;
+  }
+
+  .card {
+    padding: 20px;
+  }
+
+  .discount-config__head {
+    flex-direction: column;
+  }
+
+  .discount-rules {
+    grid-template-columns: 1fr;
+  }
+
+  .controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .export-format {
+    justify-content: space-between;
+  }
+
+  .btn,
+  .btn.secondary {
+    justify-content: center;
+  }
+}

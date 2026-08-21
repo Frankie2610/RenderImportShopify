@@ -397,6 +397,101 @@ function updateProcessButtonState() {
     processBtn.disabled = !(twoFile && ORIGINAL_ONE_HEADERS.length > 0);
 }
 
+/* ===== DISCOUNT RULES =====
+   Công thức cố định: 1 - (Variant Price / Variant Compare At Price)
+   Ngưỡng và nhãn có thể nhập tay trên UI; để trống sẽ dùng mặc định.
+*/
+const DEFAULT_DISCOUNT_CONFIG = {
+    lowMax: 20,
+    lowLabel: "0% - 20%",
+    midMax: 40,
+    midLabel: "30% - 40%",
+    highMin: 50,
+    highLabel: "Từ 50%"
+};
+
+function readOptionalNumberInput(id, fallback) {
+    const el = document.getElementById(id);
+    if (!el || String(el.value || "").trim() === "") return fallback;
+    const value = Number(el.value);
+    return Number.isFinite(value) ? value : fallback;
+}
+
+function readOptionalTextInput(id, fallback) {
+    const el = document.getElementById(id);
+    const value = el ? String(el.value || "").trim() : "";
+    return value || fallback;
+}
+
+function getDiscountConfig() {
+    return {
+        lowMax: readOptionalNumberInput("discountLowMax", DEFAULT_DISCOUNT_CONFIG.lowMax),
+        lowLabel: readOptionalTextInput("discountLowLabel", DEFAULT_DISCOUNT_CONFIG.lowLabel),
+        midMax: readOptionalNumberInput("discountMidMax", DEFAULT_DISCOUNT_CONFIG.midMax),
+        midLabel: readOptionalTextInput("discountMidLabel", DEFAULT_DISCOUNT_CONFIG.midLabel),
+        highMin: readOptionalNumberInput("discountHighMin", DEFAULT_DISCOUNT_CONFIG.highMin),
+        highLabel: readOptionalTextInput("discountHighLabel", DEFAULT_DISCOUNT_CONFIG.highLabel)
+    };
+}
+
+function parsePriceNumber(value) {
+    if (value === null || typeof value === "undefined") return null;
+    if (typeof value === "number") return Number.isFinite(value) ? value : null;
+
+    let raw = String(value).trim();
+    if (!raw) return null;
+
+    raw = raw.replace(/\s+/g, "").replace(/[^0-9,.-]/g, "");
+    if (!raw) return null;
+
+    // Dạng phân tách hàng nghìn phổ biến: 1.234.567 hoặc 1,234,567
+    if (/^-?\d{1,3}([.,]\d{3})+$/.test(raw)) {
+        raw = raw.replace(/[.,]/g, "");
+    } else if (raw.includes(",") && raw.includes(".")) {
+        // Nếu có cả hai dấu, coi dấu xuất hiện sau cùng là dấu thập phân.
+        const lastComma = raw.lastIndexOf(",");
+        const lastDot = raw.lastIndexOf(".");
+        const decimalSep = lastComma > lastDot ? "," : ".";
+        const thousandSep = decimalSep === "," ? "." : ",";
+        raw = raw.split(thousandSep).join("");
+        if (decimalSep === ",") raw = raw.replace(",", ".");
+    } else if (raw.includes(",")) {
+        const parts = raw.split(",");
+        raw = parts.length === 2 && parts[1].length !== 3
+            ? `${parts[0]}.${parts[1]}`
+            : parts.join("");
+    }
+
+    const number = Number(raw);
+    return Number.isFinite(number) ? number : null;
+}
+
+function calculateDiscountMetafield(variantPrice, compareAtPrice, config) {
+    // Variant Price rỗng => bắt buộc để rỗng.
+    if (variantPrice === null || typeof variantPrice === "undefined" || String(variantPrice).trim() === "") {
+        return "";
+    }
+
+    const price = parsePriceNumber(variantPrice);
+    const compareAt = parsePriceNumber(compareAtPrice);
+
+    if (price === null) return "";
+
+    // Rule đặc biệt theo yêu cầu: Compare At Price = 0 => nhóm đầu tiên.
+    if (compareAt === 0) return config.lowLabel;
+    if (compareAt === null) return "";
+
+    const discountPercent = (1 - (price / compareAt)) * 100;
+    if (!Number.isFinite(discountPercent)) return "";
+
+    if (discountPercent <= config.lowMax) return config.lowLabel;
+    if (discountPercent <= config.midMax) return config.midLabel;
+    if (discountPercent >= config.highMin) return config.highLabel;
+
+    // Khoảng không được định nghĩa bởi rule (mặc định: >40% và <50%) => để rỗng.
+    return "";
+}
+
 // --- Mapping candidates (giữ logic mapping tương tự bản trước, nhưng dùng normalizeKey) ---
 const ONE_TO_TWO_CANDIDATES = {
     "TITLE": ["TÊN SẢN PHẨM", "TEN SAN PHAM", "TITLE"],
@@ -433,6 +528,8 @@ processBtn.addEventListener("click", async () => {
         const rawDataTwo = XLSX.utils.sheet_to_json(sheetTwo, { defval: "" });
         // normalize each TWO row
         const dataTwo = rawDataTwo.map(r => normalizeKeys(r));
+
+        const discountConfig = getDiscountConfig();
 
         // Build dataOne (array of objects with normalized keys)
         const dataOne = dataTwo.map((row) => {
@@ -552,6 +649,11 @@ processBtn.addEventListener("click", async () => {
             Object.keys(row).forEach(k => {
                 if (!obj[k]) obj[k] = row[k];
             });
+
+            // Ghi đè cuối cùng để đảm bảo chỉ cột discount dùng đúng rule mới,
+            // kể cả khi file nguồn đã có sẵn dữ liệu ở metafield này.
+            obj[normalizeKey("DISCOUNT (PRODUCT.METAFIELDS.CUSTOM.DISCOUNT)")] =
+                calculateDiscountMetafield(salePrice, originalPrice, discountConfig);
 
             return obj;
         });
