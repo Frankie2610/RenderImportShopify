@@ -585,9 +585,25 @@ processBtn.addEventListener("click", async () => {
                 return Number(price).toLocaleString('vi-VN');
             };
 
-            const salePrice = row[normalizeKey("Giá sale")] || row[normalizeKey("Giá giảm")] || row[normalizeKey("GIÁ GIẢM")] || row[normalizeKey("VARIANT PRICE")] || "";
-            const originalPrice = row[normalizeKey("Giá bán lẻ")] || row[normalizeKey("Giá bán")] || row[normalizeKey("GIÁ BÁN LẺ")] || "";
-            const qty = row[normalizeKey("Quantity")] || row[normalizeKey("Số lượng")] || row[normalizeKey("SỐ LƯỢNG")] || "";
+            // Dùng helper thay cho chuỗi `||` để không làm mất giá trị số 0.
+            // Đồng thời hỗ trợ trực tiếp header Shopify: Variant Price / Variant Compare At Price.
+            const salePrice = getFromNormalizedRow(row, [
+                "Giá sale",
+                "Giá giảm",
+                "VARIANT PRICE",
+                "PRICE"
+            ]);
+            const originalPrice = getFromNormalizedRow(row, [
+                "Giá bán lẻ",
+                "Giá bán",
+                "VARIANT COMPARE AT PRICE",
+                "COMPARE AT PRICE"
+            ]);
+            const qty = getFromNormalizedRow(row, [
+                "Quantity",
+                "Số lượng",
+                "VARIANT INVENTORY QTY"
+            ]);
 
             const size = extractValue(desc, "Size")
                 || extractValue(desc, "Đường kính")
